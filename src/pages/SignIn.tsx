@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { API_END_POINT } from '../settings';
 
 // Modern JIRA-style logo for Sign In (SVG)
 const signInLogo = (
@@ -48,7 +49,7 @@ export default function SignIn() {
 
   const onSubmit = async (data: any) => {
     try {
-      const response = await axios.post('http://localhost:4000/api/users/login', data);
+      const response = await axios.post(`${API_END_POINT}/api/users/login`, data);
       if(response?.data?.token) {
         sessionStorage.setItem('token',  response.data.token);
         sessionStorage.setItem('userdetails', JSON.stringify(response.data.user));

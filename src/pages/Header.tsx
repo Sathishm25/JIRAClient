@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { API_END_POINT } from '../settings';
 
 interface User {
   id: string;
@@ -80,7 +81,7 @@ const Header = () => {
                 {/* User avatar or initial circle */}
                 {user?.avatar ? (
                   <img 
-                    src={`http://localhost:4000${user.avatar}`} 
+                    src={`${API_END_POINT}/${user.avatar}`} 
                     alt={user.name}
                     className="w-8 h-8 rounded-full object-cover border-2 border-white"
                   />

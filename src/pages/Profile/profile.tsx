@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_END_POINT } from '../../settings';
 
 interface User {
   id: string;
@@ -64,14 +65,14 @@ const Profile = () => {
   };  const getAvatarImage = (user: Partial<User>, formDataAvatar?: string) => {
     if (formDataAvatar) {
        if (formDataAvatar.startsWith('/uploads/')) {
-        return `http://localhost:4000${formDataAvatar}`;
+        return `${API_END_POINT}/${formDataAvatar}`;
       }
       return formDataAvatar;
     }
     if (user.avatar) {
       // Handle both relative URLs (from our API) and absolute URLs
       if (user.avatar.startsWith('/uploads/')) {
-        return `http://localhost:4000${user.avatar}`;
+        return `${API_END_POINT}/${user.avatar}`;
       }
       return user.avatar;
     }    
@@ -143,7 +144,7 @@ const Profile = () => {
         avatarFormData.append('avatar', formData.avatarFile);
 
         const avatarRes = await axios.post(
-          `http://localhost:4000/api/users/${user?.id}/avatar`,
+          `${API_END_POINT}/api/users/${user?.id}/avatar`,
           avatarFormData,
           {
             headers: {
@@ -160,7 +161,7 @@ const Profile = () => {
 
       // Update user profile via API (name and other fields)
       const res = await axios.patch(
-        `http://localhost:4000/api/users/${user?.id}`,
+        `${API_END_POINT}/api/users/${user?.id}`,
         updatedUser,
         {
           headers: {

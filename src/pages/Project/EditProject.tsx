@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import { API_END_POINT } from '../../settings';
 
 export default function EditProject () {
   const { id } = useParams();
@@ -12,7 +13,7 @@ export default function EditProject () {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const res = await axios.get(`http://localhost:4000/api/projects/${id}`);
+        const res = await axios.get(`${API_END_POINT}/api/projects/${id}`);
         setValue('name', res.data.name);
         setValue('description', res.data.description);
       } catch (error) {
@@ -29,7 +30,7 @@ export default function EditProject () {
 
   const onSubmit = async (data: any) => {
     try {
-      await axios.patch(`http://localhost:4000/api/projects/${id}`, data);
+      await axios.patch(`${API_END_POINT}/api/projects/${id}`, data);
       showToast('success', 'Project updated successfully!');
       setTimeout(() => navigate('/project'), 1200);
     } catch (error: any) {

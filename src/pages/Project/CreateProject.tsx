@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useState } from 'react';
 import { generateProjectCode } from '../../utils/ProjectCode';
+import { API_END_POINT } from '../../settings';
 
 export default function CreateProject() {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
@@ -16,7 +17,7 @@ export default function CreateProject() {
 
   const onSubmit = async (data: any) => {
     try {
-      await axios.post('http://localhost:4000/api/projects', {...data, code: generateProjectCode(data.name)});
+      await axios.post(`${API_END_POINT}/api/projects`, {...data, code: generateProjectCode(data.name)});
       showToast('success', 'Project created successfully!');
       setTimeout(() => navigate('/project'), 1200);
     } catch (error: any) {

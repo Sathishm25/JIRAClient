@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { FaRegEdit, FaRegTrashAlt } from 'react-icons/fa';
+import { API_END_POINT } from '../../settings';
  
 interface Project {
   id: string;
@@ -27,7 +28,7 @@ const ListProject = () => {
    const fetchProjects = async () => {
       setLoading(true);
       try {
-        const res = await axios.get('http://localhost:4000/api/projects');
+        const res = await axios.get(`${API_END_POINT}/api/projects`);
         const allProjects = res.data.projects || res.data;
         setTotal(allProjects.length || 0);
         const start = (page - 1) * PAGE_SIZE;
@@ -55,7 +56,7 @@ const ListProject = () => {
   const handleDelete = async (id: string) => {
     setDeleteLoading(true);
     try {
-      await axios.delete(`http://localhost:4000/api/projects/${id}`);
+      await axios.delete(`${API_END_POINT}/api/projects/${id}`);
       showToast('success', 'Project deleted successfully!');
       setShowDeleteModal(null);
       fetchProjects();

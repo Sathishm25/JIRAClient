@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { API_END_POINT } from '../../settings';
 
 interface Comment {
   id: string;
@@ -46,7 +47,7 @@ const ViewIssue = () => {
   useEffect(() => {
     const fetchIssue = async () => {
       try {
-        const res = await axios.get(`http://localhost:4000/api/issues/${issueId}`);
+        const res = await axios.get(`${API_END_POINT}/api/issues/${issueId}`);
         setIssue(res.data.issue || res.data);
       } catch {
         setIssue(null);
@@ -62,7 +63,7 @@ const ViewIssue = () => {
   }, [issue]);
   useEffect(() => {
     // Fetch users for dropdowns
-    axios.get('http://localhost:4000/api/users').then(res => {
+    axios.get(`${API_END_POINT}/api/users`).then(res => {
       setUsers(res.data.users || res.data);
     });
   }, [issueId]);
@@ -73,7 +74,7 @@ const ViewIssue = () => {
       if (issueId) {
         setLoadingComments(true);
         try {
-          const res = await axios.get(`http://localhost:4000/api/comments/issue/${issueId}`);
+          const res = await axios.get(`${API_END_POINT}/api/comments/issue/${issueId}`);
           setComments(res.data.comments || res.data || []);
         } catch (error) {
           console.error('Error fetching comments:', error);
@@ -91,7 +92,7 @@ const ViewIssue = () => {
     if (!user) return null;
     if (user.avatar) {
       if (user.avatar.startsWith('/uploads/')) {
-        return `http://localhost:4000${user.avatar}`;
+        return `${API_END_POINT}/${user.avatar}`;
       }
       return user.avatar;
     }
@@ -139,7 +140,7 @@ const ViewIssue = () => {
   const handleFieldSave = async (key: string) => {
     setSaving(true);
     try {
-      const res = await axios.patch(`http://localhost:4000/api/issues/${issueId}`, { [key]: editValue });
+      const res = await axios.patch(`${API_END_POINT}/api/issues/${issueId}`, { [key]: editValue });
       setEditIssue(res.data);
       setIssue(res.data);
       setEditField(null);
@@ -160,11 +161,11 @@ const ViewIssue = () => {
     
     setSubmittingComment(true);
     try {
-      await axios.post(`http://localhost:4000/api/comments`, { content: comment, issueId, userId });
+      await axios.post(`${API_END_POINT}/api/comments`, { content: comment, issueId, userId });
       setComment('');
       
       // Refresh comments list
-      const res = await axios.get(`http://localhost:4000/api/comments/issue/${issueId}`);
+      const res = await axios.get(`${API_END_POINT}/api/comments/issue/${issueId}`);
       setComments(res.data.comments || res.data || []);
       
       setToast('Comment added successfully!');

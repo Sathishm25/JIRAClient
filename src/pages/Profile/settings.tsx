@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { API_END_POINT } from '../../settings'
 
 // Icon components using SVG
 const LockIcon = () => (
@@ -106,7 +107,7 @@ const Settings = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:4000/api/users/change-password', {
+      const response = await fetch(`${API_END_POINT}/api/users/change-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

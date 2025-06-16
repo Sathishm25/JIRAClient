@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { API_END_POINT } from '../settings';
 
 // Modern JIRA-style logo for Sign Up (SVG)
 const signUpLogo = (
@@ -40,7 +41,7 @@ export default function SignUp() {
 
   const onSubmit = async (data: any) => {
     try {
-      const response = await axios.post('http://localhost:4000/api/users/', {...data, role: 'regular'});
+      const response = await axios.post(`${API_END_POINT}/api/users/`, {...data, role: 'regular'});
       if(response?.status === 201) {
         showToast('success', 'Signed up successfully! Please sign in.');
         setTimeout(() => navigate('/'), 1000);

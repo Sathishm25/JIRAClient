@@ -6,6 +6,7 @@ import MDEditor from '@uiw/react-md-editor';
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
 import { generateProjectCode } from '../../utils/ProjectCode';
+import { API_END_POINT } from '../../settings';
 
 interface ProjectOption {
   id: string;
@@ -27,7 +28,7 @@ const CreateIssue = () => {
     // Fetch all projects for dropdown, but select current by default
     const fetchProjects = async () => {
       try {
-        const res = await axios.get('http://localhost:4000/api/projects',);
+        const res = await axios.get(`${API_END_POINT}/api/projects`,);
         setProjects(res.data.projects || res.data);
       } catch {
         setProjects([]);
@@ -61,7 +62,7 @@ const CreateIssue = () => {
         showToast('error', 'Project ID is required');
         return;
       }
-      await axios.post('http://localhost:4000/api/issues', { ...data, description, code: generateProjectCode(data.title), projectId, reporterId: user.id, status: 'To Do' });
+      await axios.post(`${API_END_POINT}/api/issues`, { ...data, description, code: generateProjectCode(data.title), projectId, reporterId: user.id, status: 'To Do' });
       showToast('success', 'Issue created successfully!');
       setTimeout(() => navigate(-1), 1200);
     } catch (error: any) {

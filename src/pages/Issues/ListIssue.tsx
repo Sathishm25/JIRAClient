@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import { API_END_POINT } from "../../settings";
 
 interface Issue {
   id: string;
@@ -35,7 +36,7 @@ const ListIssue = () => {
     if (user.avatar) {
       // Handle both relative URLs (from our API) and absolute URLs
       if (user.avatar.startsWith('/uploads/')) {
-        return `http://localhost:4000${user.avatar}`;
+        return `${API_END_POINT}/${user.avatar}`;
       }
       return user.avatar;
     }
@@ -78,7 +79,7 @@ const ListIssue = () => {
       setLoading(true);
       try {
         const res = await axios.get(
-          `http://localhost:4000/api/projects/${projectId}`
+          `${API_END_POINT}/api/projects/${projectId}`
         );
         setIssues(res.data.issues);
       } catch (err) {
@@ -169,7 +170,7 @@ const ListIssue = () => {
     
     try {
       // Update issue status in backend
-      await axios.patch(`http://localhost:4000/api/issues/${draggedIssue.id}`, {
+      await axios.patch(`${API_END_POINT}/api/issues/${draggedIssue.id}`, {
         status: newStatus
       });
 
