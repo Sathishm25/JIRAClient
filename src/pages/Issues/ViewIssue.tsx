@@ -92,7 +92,7 @@ const ViewIssue = () => {
     if (!user) return null;
     if (user.avatar) {
       if (user.avatar.startsWith('/uploads/')) {
-        return `${API_END_POINT}/${user.avatar}`;
+        return `${API_END_POINT}${user.avatar}`;
       }
       return user.avatar;
     }
