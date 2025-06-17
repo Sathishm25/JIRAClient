@@ -1,4 +1,4 @@
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { Route, HashRouter as Router, Routes } from 'react-router-dom';
 import CreateIssue from './pages/Issues/CreateIssue';
 import ListIssue from './pages/Issues/ListIssue';
 import ViewIssue from './pages/Issues/ViewIssue';
