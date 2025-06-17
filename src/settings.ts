@@ -1,1 +1,0 @@
-export const API_END_POINT = 'https://jira-jfm7.onrender.com';
