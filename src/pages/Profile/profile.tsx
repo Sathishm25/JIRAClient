@@ -62,10 +62,12 @@ const Profile = () => {
       .map(word => word.charAt(0).toUpperCase())
       .join('')
       .substring(0, 2);
-  };  const getAvatarImage = (user: Partial<User>, formDataAvatar?: string) => {
+  };
+
+  const getAvatarImage = (user: Partial<User>, formDataAvatar?: string) => {
     if (formDataAvatar) {
        if (formDataAvatar.startsWith('/uploads/')) {
-        return `${API_END_POINT}/${formDataAvatar}`;
+        return `${API_END_POINT}${formDataAvatar}`;
       }
       return formDataAvatar;
     }
@@ -88,7 +90,9 @@ const Profile = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -103,6 +107,7 @@ const Profile = () => {
       }));
     }
   };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -127,6 +132,7 @@ const Profile = () => {
       }));
     }
   };
+
   const handleSave = async () => {
     if (!validateForm()) {
       return;
@@ -144,7 +150,7 @@ const Profile = () => {
         avatarFormData.append('avatar', formData.avatarFile);
 
         const avatarRes = await axios.post(
-          `${API_END_POINT}/api/users/${user?.id}/avatar`,
+          `http://localhost:4000/api/users/${user?.id}/avatar`,
           avatarFormData,
           {
             headers: {
@@ -161,7 +167,7 @@ const Profile = () => {
 
       // Update user profile via API (name and other fields)
       const res = await axios.patch(
-        `${API_END_POINT}/api/users/${user?.id}`,
+        `http://localhost:4000/api/users/${user?.id}`,
         updatedUser,
         {
           headers: {
@@ -186,7 +192,8 @@ const Profile = () => {
         name: res.data.name || '',
         avatar: res.data.avatar || '',
         avatarFile: undefined
-      });      setIsEditing(false);
+      });      
+      setIsEditing(false);
       
       // Show success message
       showToast('success', 'Profile updated successfully!');
@@ -198,6 +205,7 @@ const Profile = () => {
       setLoading(false);
     }
   };
+
   const handleCancel = () => {
     // Clean up preview URL if it was created
     if (formData.avatar && formData.avatar.startsWith('blob:')) {
@@ -220,7 +228,10 @@ const Profile = () => {
       <div className="flex items-center justify-center min-h-96">
         <div className="text-lg">Loading...</div>
       </div>
-    );  }  return (
+    );
+  }
+
+  return (
     <div 
       className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative"
       style={{
@@ -265,12 +276,10 @@ const Profile = () => {
             </button>
           </div>
         </div>
-      )}
-
-      {/* Background Pattern */}
+      )}      {/* Background Pattern */}
       <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
       
-      <div className="relative z-10 max-w-6xl mx-auto p-6">
+      <div className="relative z-10 max-w-full mx-auto p-6">
         {/* Header with Navigation */}
         <div className="mb-8">
           <button
@@ -344,7 +353,7 @@ const Profile = () => {
                 <button
                   onClick={handleSave}
                   disabled={loading}
-                  className="bg-[#fff] text-white-600 px-6 py-3 rounded-xl hover:bg-blue-50 transition-all duration-300 font-semibold disabled:opacity-50 flex items-center gap-2"
+                  className="bg-[#fff] text-blue-600 px-6 py-3 rounded-xl hover:bg-blue-50 transition-all duration-300 font-semibold disabled:opacity-50 flex items-center gap-2"
                 >
                   {loading ? (
                     <>
@@ -366,8 +375,11 @@ const Profile = () => {
               </div>
             )}
           </div>
-        </div>        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">          {/* Profile Information Card */}
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Profile Information Card - Enhanced Design */}
           <div className="lg:col-span-2">
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 overflow-hidden h-full">
               <div className="p-8 h-full flex flex-col">
@@ -382,160 +394,182 @@ const Profile = () => {
                   </h2>
                 </div>
 
-                {/* Profile Picture and Details Layout */}
-                <div className="flex flex-col lg:flex-row gap-8 flex-1">
-                  {/* Profile Picture Section - Left Side */}
-                  <div className="flex-shrink-0">
-                    <div className="space-y-4">
-                      <label className="block text-sm font-semibold text-slate-700 uppercase tracking-wide">
-                        Profile Picture
-                      </label>
-                      
-                      <div className="flex flex-col items-center">
-                        <div className="w-32 h-32 mb-4 relative group">
-                          {(formData.avatar && isEditing) || getAvatarImage(user) ? (
-                            <img 
-                              src={getAvatarImage(user, formData.avatar)} 
-                              alt={user.name}
-                              className={`w-full h-full rounded-2xl object-cover border-4 border-white shadow-xl ${
-                                isEditing ? 'cursor-pointer group-hover:scale-105 transition-transform duration-300' : ''
-                              }`}
-                              onClick={isEditing ? () => document.getElementById('avatar-upload')?.click() : undefined}
-                            />
-                          ) : (
-                            <div 
-                              className={`w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-2xl flex items-center justify-center text-3xl font-bold shadow-xl ${
-                                isEditing ? 'cursor-pointer group-hover:scale-105 transition-transform duration-300' : ''
-                              }`}
-                              onClick={isEditing ? () => document.getElementById('avatar-upload')?.click() : undefined}
-                            >
-                              {getInitials(user?.name || '')}
-                            </div>
-                          )}
-                          
-                          {isEditing && (
-                            <>
-                              <input
-                                id="avatar-upload"
-                                type="file"
-                                accept="image/*"
-                                onChange={handleFileChange}
-                                className="hidden"
-                              />
-                              <div className="absolute inset-0 rounded-2xl bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center cursor-pointer"
-                                   onClick={() => document.getElementById('avatar-upload')?.click()}>
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/20 backdrop-blur-sm rounded-xl p-3">
-                                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                                  </svg>
-                                </div>
-                              </div>
-                            </>
-                          )}
-                        </div>
+                {/* Enhanced Personal Information Layout */}
+                <div className="space-y-8">
+                  {/* Profile Picture Section - Centered */}
+                  <div className="flex flex-col items-center text-center">
+                    <label className="block text-sm font-semibold text-slate-700 uppercase tracking-wide mb-6">
+                      Profile Picture
+                    </label>
+                    
+                    <div className="relative group mb-6">
+                      <div className="w-40 h-40 relative">
+                        {(formData.avatar && isEditing) || getAvatarImage(user) ? (
+                          <img 
+                            src={getAvatarImage(user, formData.avatar)} 
+                            alt={user.name}
+                            className={`w-full h-full rounded-3xl object-cover border-4 border-white shadow-2xl ${
+                              isEditing ? 'cursor-pointer group-hover:scale-105 transition-all duration-300' : ''
+                            }`}
+                            onClick={isEditing ? () => document.getElementById('avatar-upload')?.click() : undefined}
+                          />
+                        ) : (
+                          <div 
+                            className={`w-full h-full bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600 text-white rounded-3xl flex items-center justify-center text-4xl font-bold shadow-2xl ${
+                              isEditing ? 'cursor-pointer group-hover:scale-105 transition-all duration-300' : ''
+                            }`}
+                            onClick={isEditing ? () => document.getElementById('avatar-upload')?.click() : undefined}
+                          >
+                            {getInitials(user?.name || '')}
+                          </div>
+                        )}
                         
                         {isEditing && (
-                          <button
-                            type="button"
-                            onClick={() => document.getElementById('avatar-upload')?.click()}
-                            className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 text-sm font-medium flex items-center gap-2"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                            </svg>
-                            Upload New Photo
-                          </button>
+                          <>
+                            <input
+                              id="avatar-upload"
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFileChange}
+                              className="hidden"
+                            />
+                            <div className="absolute inset-0 rounded-3xl bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center cursor-pointer"
+                                 onClick={() => document.getElementById('avatar-upload')?.click()}>
+                              <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white/20 backdrop-blur-sm rounded-2xl p-4 transform scale-90 group-hover:scale-100">
+                                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0118.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                              </div>
+                            </div>
+                          </>
                         )}
                       </div>
                     </div>
-                  </div>                  {/* Details Section - Right Side */}
-                  <div className="flex-1 flex flex-col justify-center">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">{/* Name Field */}
-                  <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-slate-700 uppercase tracking-wide">
-                      Full Name
-                    </label>
-                    {isEditing ? (
-                      <div>
-                        <input
-                          type="text"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleInputChange}
-                          className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 bg-white/50 backdrop-blur-sm ${
-                            errors.name ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20' : 'border-slate-200'
-                          }`}
-                          placeholder="Enter your full name"
-                        />
-                        {errors.name && (
-                          <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                            {errors.name}
-                          </p>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                        <p className="text-lg font-medium text-slate-800">{user.name}</p>
-                      </div>
+                    
+                    {isEditing && (
+                      <button
+                        type="button"
+                        onClick={() => document.getElementById('avatar-upload')?.click()}
+                        className="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 text-white px-6 py-3 rounded-2xl hover:from-blue-600 hover:via-purple-600 hover:to-indigo-600 transition-all duration-300 font-semibold flex items-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        Upload New Photo
+                      </button>
                     )}
                   </div>
 
-                  {/* Email Field */}
-                  <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-slate-700 uppercase tracking-wide">
-                      Email Address
-                    </label>
-                    <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 flex items-center gap-3">
-                      <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                      </svg>
-                      <p className="text-lg font-medium text-slate-800">{user.email}</p>
-                    </div>
+                  {/* Elegant Divider */}
+                  <div className="flex items-center justify-center">
+                    <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent w-full max-w-md"></div>
                   </div>
 
-                  {/* User Role */}
-                  <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-slate-700 uppercase tracking-wide">
-                      Role
-                    </label>
-                    <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200 flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  {/* Details Section - Enhanced Grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Name Field */}
+                    <div className="space-y-3">
+                      <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wide">
+                        <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Full Name
+                      </label>
+                      {isEditing ? (
+                        <div>
+                          <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                            className={`w-full px-5 py-4 border-2 rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 bg-white/70 backdrop-blur-sm font-medium text-slate-800 ${
+                              errors.name ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20' : 'border-slate-200 hover:border-slate-300'
+                            }`}
+                            placeholder="Enter your full name"
+                          />
+                          {errors.name && (
+                            <p className="text-red-500 text-sm mt-3 flex items-center gap-2 bg-red-50 p-2 rounded-lg">
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                              {errors.name}
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="p-5 bg-gradient-to-r from-slate-50 to-slate-100 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300">
+                          <p className="text-xl font-semibold text-slate-800">{user.name}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Email Field */}
+                    <div className="space-y-3">
+                      <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wide">
+                        <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                        </svg>
+                        Email Address
+                      </label>
+                      <div className="p-5 bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl border border-emerald-200 shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-4">
+                        <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center">
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                          </svg>
+                        </div>
+                        <p className="text-xl font-semibold text-slate-800 break-all">{user.email}</p>
+                      </div>
+                    </div>
+
+                    {/* User Role */}
+                    <div className="space-y-3">
+                      <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wide">
+                        <svg className="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
                         </svg>
+                        Role
+                      </label>
+                      <div className="p-5 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl border border-purple-200 shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-4">
+                        <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
+                          </svg>
+                        </div>
+                        <p className="text-xl font-semibold text-slate-800">{user?.role || 'Team Member'}</p>
                       </div>
-                      <p className="text-lg font-medium text-slate-800">{user?.role || 'Team Member'}</p>
                     </div>
-                  </div>
 
-                  {/* Join Date */}
-                  <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-slate-700 uppercase tracking-wide">
-                      Member Since
-                    </label>
-                    <div className="p-4 bg-green-50 rounded-xl border border-green-200 flex items-center gap-3">
-                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <p className="text-lg font-medium text-slate-800">
-                        {new Date().toLocaleDateString('en-US', { 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric' 
-                        })}
-                      </p>
-                    </div>
-                  </div>
+                    {/* Join Date */}
+                    <div className="space-y-3">
+                      <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wide">
+                        <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Member Since
+                      </label>
+                      <div className="p-5 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl border border-orange-200 shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-4">
+                        <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <p className="text-xl font-semibold text-slate-800">
+                          {new Date().toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                          })}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>          {/* Avatar and Stats Sidebar */}
+          </div>
+
+          {/* Avatar and Stats Sidebar */}
           <div className="space-y-6">
             {/* Quick Stats Card */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
@@ -630,9 +664,11 @@ const Profile = () => {
                     </svg>
                   </div>
                   <span className="font-medium text-slate-700">Account Settings</span>
-                </button>              </div>        </div>
-      </div>
-    </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -81,7 +81,7 @@ const Header = () => {
                 {/* User avatar or initial circle */}
                 {user?.avatar ? (
                   <img 
-                    src={`${API_END_POINT}/${user.avatar}`} 
+                    src={`${API_END_POINT}${user.avatar}`} 
                     alt={user.name}
                     className="w-8 h-8 rounded-full object-cover border-2 border-white"
                   />
